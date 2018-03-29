@@ -61,8 +61,8 @@ class SeatRandomizer {
 
         data = parseCsv(seatConsumersFile?.newReader("UTF-8"))
         data?.each { line ->
-            SeatConsumer istuja = [count: (line.count as Integer), description: line.description, category: (line.category as Integer)]
-            consumers.add(istuja)
+            SeatConsumer seatConsumer = [count: (line.count as Integer), description: line.description, category: (line.category as Integer)]
+            consumers.add(seatConsumer)
         }
     }
 }
