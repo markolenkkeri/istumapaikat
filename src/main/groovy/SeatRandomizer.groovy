@@ -55,8 +55,8 @@ class SeatRandomizer {
 
         def data = parseCsv(roomsFile?.newReader("UTF-8"))
         data?.each { line ->
-            Room huone = [id: (line.id as Integer), seats: (line.seats as Integer), description: line.description, category: (line.category as Integer)]
-            rooms.add(huone)
+            Room room = [id: (line.id as Integer), seats: (line.seats as Integer), description: line.description, category: (line.category as Integer)]
+            rooms.add(room)
         }
 
         data = parseCsv(seatConsumersFile?.newReader("UTF-8"))
