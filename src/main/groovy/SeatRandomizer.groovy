@@ -60,8 +60,8 @@ class SeatRandomizer {
     }
 
     private void initialize() {
-        File roomsFile = new File("huoneet.csv")
-        File seatConsumersFile = new File("istujat.csv")
+        File roomsFile = new File("rooms.csv")
+        File seatConsumersFile = new File("seatconsumers.csv")
 
         def data = parseCsv(roomsFile?.newReader("UTF-8"))
         data?.each { line ->
