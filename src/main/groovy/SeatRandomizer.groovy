@@ -6,6 +6,7 @@ import static com.xlson.groovycsv.CsvParser.parseCsv
 class SeatRandomizer {
     List<Room> rooms = []
     List<SeatConsumer> consumers = []
+    def categoryCount = [:].withDefault { 0 }
 
     static void main(String[] args) {
         new SeatRandomizer().randomize()
@@ -28,6 +29,7 @@ class SeatRandomizer {
             suitableConsumers.each { seatConsumer ->
                 def chosenRoom = getSuitableRoom(seatConsumer, rand)
                 chosenRoom.addConsumer(seatConsumer)
+                categoryCount.put(seatConsumer.category, categoryCount.get(seatConsumer.category)-seatConsumer.count)
             }
         }
 
@@ -35,18 +37,26 @@ class SeatRandomizer {
         rooms.sort { it.id }.each {
             println it
         }
+        println categoryCount
     }
 
     private Room getSuitableRoom(SeatConsumer seatConsumer, Random rand) throws Exception {
-        def suitableRooms = rooms.findAll { it.seats >= seatConsumer.count && it.category == seatConsumer.category }
-        if (suitableRooms.size() == 0) { // Well maybe we should just plug this guy somewhere else..
+        //Find suitable categories of rooms, eg. room categories that have no priority seaters left
+        //This could be optimized to calculate if that category has seats left but maybe that's not that important.
+        def suitableCategories
+        if(seatConsumer.isStrict())suitableCategories = [seatConsumer.category]
+        else suitableCategories = ([seatConsumer.category]+categoryCount.findAll { key, value -> value==0}.keySet()).unique()
+
+        //With suitable categories listed, get the suitable rooms
+        def suitableRooms = rooms.findAll { it.seats >= seatConsumer.count && suitableCategories.contains(it.category) }
+        if (!suitableRooms) { // Well maybe we should just plug this guy somewhere else.. there's no room in suitable categories
             suitableRooms = rooms.findAll { it.seats >= seatConsumer.count }
             if (suitableRooms.size() == 0) {
                 println "$seatConsumer could not be assigned a room, please run again.." //Or maybe not, oops
                 throw new Exception("No suitable room found!")
             }
         }
-        suitableRooms.get(rand.nextInt(suitableRooms.size()))
+        suitableRooms.get(rand.nextInt(suitableRooms.size()))//Select one room from the suitable rooms
     }
 
     private void initialize() {
@@ -57,12 +67,14 @@ class SeatRandomizer {
         data?.each { line ->
             Room room = [id: (line.id as Integer), seats: (line.seats as Integer), description: line.description, category: (line.category as Integer)]
             rooms.add(room)
+            categoryCount.put(room.category, 0)
         }
 
         data = parseCsv(seatConsumersFile?.newReader("UTF-8"))
         data?.each { line ->
-            SeatConsumer seatConsumer = [count: (line.count as Integer), description: line.description, category: (line.category as Integer)]
+            SeatConsumer seatConsumer = [count: (line.count as Integer), description: line.description, category: (line.category as Integer), strict: (line.strict as Integer)==1]
             consumers.add(seatConsumer)
+            categoryCount.put(seatConsumer.category, categoryCount.get(seatConsumer.category)+seatConsumer.count)
         }
     }
 }

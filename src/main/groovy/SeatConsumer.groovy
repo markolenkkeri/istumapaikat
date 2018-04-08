@@ -2,6 +2,7 @@ class SeatConsumer {
     int count
     String description
     int category
+    boolean strict
 
     @Override
     String toString()
