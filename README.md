@@ -11,4 +11,4 @@ Categories in rooms/consumers csv-files:
 
 ## Lenient seating
 
-The istujat.csv contains the 'strict' column, which designates whether the team/person wants to be in only that category of seating or not - if not, the team/person could be randomized into a different category, if that category has no prioritized seaters left.
+The seatconsumers.csv contains the 'strict' column, which designates whether the team/person wants to be in only that category of seating or not - if not, the team/person could be randomized into a different category, if that category has no prioritized seaters left.
